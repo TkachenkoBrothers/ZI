@@ -3,11 +3,11 @@ import wave
 import struct
 
 
-freq0 = 600.0
-freq1 = 800.0
-freqb = 1000.0
-freqBeginEnd = 400.0
-data_size = 8000
+freq0 = 5200.0
+freq1 = 5300.0
+freqb = 5400.0
+freqBeginEnd = 5000.0
+data_size = 1000
 fname = "WaveTest.wav"
 frate = 11025.0  # framerate as a float
 amp = 64000.0     # multiplier for amplitude
@@ -28,6 +28,7 @@ def write_wav_data():
     wav_file.setparams((nchannels, sampwidth, framerate, nframes,
     comptype, compname))
     write_wav_data_element(freqBeginEnd)
+    write_wav_data_element(freqBeginEnd)
     f = open('workfile.txt', 'r')
     str = f.read()
     for i in str:
@@ -40,6 +41,7 @@ def write_wav_data():
                 write_wav_data_element(freq1)
             if j == 'b':
                 write_wav_data_element(freqb)
+    write_wav_data_element(freqBeginEnd)
     write_wav_data_element(freqBeginEnd)
     for s in sine_list_x:
     # write the audio frames to file

@@ -11,17 +11,17 @@ import curses
 
 
 
-CHUNK = 2000 # Chunk of audio input to consider
+CHUNK = 250 # Chunk of audio input to consider
 RATE = 44100 # Recording rate
 WINDOW = blackman(CHUNK) # Using blackman window. For more information see
 SAMPLE_SIZE = 8
                 # Number of data points to average over. This is used for 2 things
                 # 1. Reducing noise between subsequent string strokes
                 # 2. We don't output too many values which might confuse the user
-Target_Begin = 400
-Target_0 = 600
-Target_1 = 800
-Target_b = 1000
+Target_Begin = 5000
+Target_0 = 5200
+Target_1 = 5300
+Target_b = 5400
 
 loop_running = False
 
@@ -104,10 +104,10 @@ class Decoder:
             if curpos == SAMPLE_SIZE:
                 curpos = 0
             this_avg = sum(last_n) / SAMPLE_SIZE # Compute the average
-            print(thefreq)
+            #print(thefreq)
             self.freq_list.append(thefreq)
             i += 1
-            if i == 550:
+            if i == 1800:
                 break
 
 
@@ -126,8 +126,8 @@ class Decoder:
             if (self.freq_list[a] >= Target_Begin - 10) and (self.freq_list[a] <= Target_Begin + 10):
                 amount_of_begin = amount_of_begin + 1
 
-        if amount_ones == 0 and amount_zeros == 0 and amount_of_b == 0:
-            return -1
+        #if amount_ones == 0 and amount_zeros == 0 and amount_of_b == 0:
+          #  return -1
         if amount_zeros > amount_ones and amount_zeros > amount_of_b and amount_zeros > amount_of_begin:
             return 0
         if amount_ones > amount_zeros and amount_ones > amount_of_b and amount_ones > amount_of_begin:
@@ -183,8 +183,10 @@ class Decoder:
                     b += self.binstr[p]
                 arr.append(int(b, 2))
         for j in arr:
-            self.finStr += chr(j)
-
+            if j <= 128:
+                self.finStr += chr(j)
+            else:
+                self.finStr += "*"
 
     def _close_audio(self):
         """ Call this function at the end """
