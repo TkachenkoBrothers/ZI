@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import pyaudio
 from wave import struct as wave_struct
+import wave
 from numpy import blackman
 from numpy.fft import rfft
 from numpy import array
@@ -34,6 +35,30 @@ except: # Unix/Mac
     def kbfunc():
         inp, out, err = select.select([sys.stdin], [], [], 0.001) # 0.1 second delay
         return sys.stdin.readline() if sys.stdin in inp else 0
+
+def play():
+    #define stream chunk
+    #chunk = 1024
+    #open a wav format music
+    f = wave.open(r"WaveTest.wav","rb")
+    #instantiate PyAudio
+    p = pyaudio.PyAudio()
+    #open stream
+    stream = p.open(format = p.get_format_from_width(f.getsampwidth()),
+                    channels = f.getnchannels(),
+                    rate = f.getframerate(),
+                    output = True)
+    #read data
+    data = f.readframes(CHUNK)
+    #paly stream
+    while data != '':
+        stream.write(data)
+        data = f.readframes(CHUNK)
+    #stop stream
+    stream.stop_stream()
+    stream.close()
+    #close PyAudio
+    p.terminate()
 
 class Decoder:
 

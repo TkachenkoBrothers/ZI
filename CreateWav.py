@@ -1,7 +1,7 @@
 import math
 import wave
 import struct
-
+import config
 
 freq0 = 5200.0
 freq1 = 5300.0
@@ -11,13 +11,14 @@ data_size = 1000
 fname = "WaveTest.wav"
 frate = 11025.0  # framerate as a float
 amp = 64000.0     # multiplier for amplitude
+word = ''
 
 sine_list_x = []
 def write_wav_data_element(freq):
-    for x in range(data_size):
+    for x in range(int(data_size)):
         sine_list_x.append(math.sin(2*math.pi*freq*(x/frate)))
 
-def write_wav_data():
+def write_wav_data(progress, close_flag):
     wav_file = wave.open(fname, "w")
     nchannels = 1
     sampwidth = 2
@@ -30,7 +31,8 @@ def write_wav_data():
     write_wav_data_element(freqBeginEnd)
     write_wav_data_element(freqBeginEnd)
     f = open('workfile.txt', 'r')
-    str = f.read()
+    str = word#f.read()
+    progress['value']=25
     for i in str:
         k = ord(i)
         a = bin(k)
@@ -43,11 +45,14 @@ def write_wav_data():
                 write_wav_data_element(freqb)
     write_wav_data_element(freqBeginEnd)
     write_wav_data_element(freqBeginEnd)
+    progress['value']=50
     for s in sine_list_x:
-    # write the audio frames to file
         wav_file.writeframes(struct.pack('h', int(s*amp/2)))
+    progress['value']=100
+    close_flag = True
+    #progress.destroy()
     wav_file.close()
 
-write_wav_data()
+
 
 

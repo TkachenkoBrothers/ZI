@@ -1,50 +1,10 @@
 __author__ = 'Roman'
 from Tkinter import *
+import ttk
 import CreateWav
 import Decoder
 from threading import Thread
-
-SPEED_OPTIONS_VIEW = [
-    'extra low',
-    'low',
-    'middle',
-    'high',
-    'extra high',
-]
-
-SPEED_OPTIONS_CREATE_WAV = {
-    'extra low': 8000,
-    'low': 4000,
-    'middle': 2000,
-    'high': 1000,
-    'extra high': 500,
-}
-
-SPEED_OPTIONS_DECODER = {
-    'extra low': 2000,
-    'low': 1000,
-    'middle': 500,
-    'high': 250,
-    'extra high': 125,
-}
-
-DEFAULT_SETTINGS = {
-    'data_size': 1000,
-    'CHUNK': 250,
-    'freqBeginEnd': 5000.0,
-    'freq0': 5200.0,
-    'freq1': 5300.0,
-    'freqb': 5400.0,
-    'Target_Begin': 5000,
-    'Target_0':5200,
-    'Target_1': 5300,
-    'Target_b': 5400,
-}
-
-OPTIONS_MODE = 'options'
-CODE_MODE = 'code'
-DECODE_MODE = 'decode'
-INFO_MODE = 'info'
+from config import *
 
 def print_vars():
     print "setting data_size = ", CreateWav.data_size
@@ -87,6 +47,7 @@ class App(Frame):
         self.button_info = Button(self.menuframe, text="Info", relief=RAISED, command=self.button_info_click)
         self.button_info.grid(column=0, row=3,padx=5, pady=5, sticky="nsew")
         self.create_coder()
+        self.code_progress_exist = False
 
     def button_options_click(self):
         self.config_modes(self.mode, OPTIONS_MODE)
@@ -155,14 +116,14 @@ class App(Frame):
     def button_save_options_click(self):
         CreateWav.data_size = SPEED_OPTIONS_CREATE_WAV[self.speed.get()]
         Decoder.CHUNK = SPEED_OPTIONS_DECODER[self.speed.get()]
-        CreateWav.freqBeginEnd = self.freq_begin_end.get()
-        CreateWav.freq0 = self.freq0.get()
-        CreateWav.freq1 = self.freq1.get()
-        CreateWav.freqb = self.freq2.get()
-        Decoder.Target_Begin = self.freq_begin_end.get()
-        Decoder.Target_0 = self.freq0.get()
-        Decoder.Target_1 = self.freq1.get()
-        Decoder.Target_b = self.freq2.get()
+        CreateWav.freqBeginEnd = float(self.freq_begin_end.get())
+        CreateWav.freq0 = float(self.freq0.get())
+        CreateWav.freq1 = float(self.freq1.get())
+        CreateWav.freqb = float(self.freq2.get())
+        Decoder.Target_Begin = float(self.freq_begin_end.get())
+        Decoder.Target_0 = float(self.freq0.get())
+        Decoder.Target_1 = float(self.freq1.get())
+        Decoder.Target_b = float(self.freq2.get())
         print_vars()
 
     def config_modes(self, prev_mode, curr_mode):
@@ -201,7 +162,7 @@ class App(Frame):
 
     def create_coder_text_box(self):
         self.coder_text_box = Entry(self)
-        self.coder_text_box.grid(column=1, columnspan=4, rowspan=4, row=0, padx=5, pady=5, sticky="nsew")
+        self.coder_text_box.grid(column=1, columnspan=4, rowspan=3, row=0, padx=5, pady=5, sticky="nsew")
     def destroy_coder_text_box(self):
         self.coder_text_box.destroy()
 
@@ -218,7 +179,7 @@ class App(Frame):
         self.button_accept_code.destroy()
 
     def create_code_play_button(self):
-        self.button_play_code = Button(self, text="Play")
+        self.button_play_code = Button(self, text="Play", command=self.button_play_code_click)
         self.button_play_code.grid(column=1, row=5, padx=5, pady=5, sticky="nsew")
     def destroy_code_play_button(self):
         self.button_play_code.destroy()
@@ -271,6 +232,8 @@ class App(Frame):
         Decoder.loop_running = False
 
     def button_coder_click(self):
+        if self.code_progress_exist:
+            self.code_progress.destroy()
         self.config_modes(self.mode, CODE_MODE)
         self.create_coder()
 
@@ -283,6 +246,21 @@ class App(Frame):
         self.create_info()
 
     def button_accept_code_click(self):
-        if self.mode == 'code' and self.coder_text_box.get():
-            CreateWav.write_wav_data(self.coder_text_box.get())
+        if self.mode == 'code' and self.coder_text_box.get() != '':
+            close_flag = False
+            word = self.coder_text_box.get()
+            CreateWav.word = word
+            s = ttk.Style()
+            #s.theme_use("default")
+            s.configure("TProgressbar", thickness=10)
+            self.code_progress = ttk.Progressbar(self, orient="horizontal", mode="determinate", style='TProgressbar')
+            self.code_progress.grid(column=1, columnspan=4, row=3, padx=5, pady=5, sticky="ew")
+            self.code_progress['maximum'] = 100
+            self.code_progress_exist = True;
+            code_thread = Thread(target=CreateWav.write_wav_data, args=[self.code_progress,close_flag,])
+            code_thread.start()
+
+    def button_play_code_click(self):
+        Decoder.play()
+
 
