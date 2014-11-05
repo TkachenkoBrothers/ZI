@@ -4,7 +4,7 @@ import CreateWav
 import Decoder
 from threading import Thread
 
-SPEED_OPTIONS = [
+SPEED_OPTIONS_VIEW = [
     'extra low',
     'low',
     'middle',
@@ -12,17 +12,54 @@ SPEED_OPTIONS = [
     'extra high',
 ]
 
+SPEED_OPTIONS_CREATE_WAV = {
+    'extra low': 8000,
+    'low': 4000,
+    'middle': 2000,
+    'high': 1000,
+    'extra high': 500,
+}
+
+SPEED_OPTIONS_DECODER = {
+    'extra low': 2000,
+    'low': 1000,
+    'middle': 500,
+    'high': 250,
+    'extra high': 125,
+}
+
+DEFAULT_SETTINGS = {
+    'data_size': 1000,
+    'CHUNK': 250,
+    'freqBeginEnd': 5000.0,
+    'freq0': 5200.0,
+    'freq1': 5300.0,
+    'freqb': 5400.0,
+    'Target_Begin': 5000,
+    'Target_0':5200,
+    'Target_1': 5300,
+    'Target_b': 5400,
+}
+
 OPTIONS_MODE = 'options'
 CODE_MODE = 'code'
 DECODE_MODE = 'decode'
 INFO_MODE = 'info'
+
+def print_vars():
+    print "setting data_size = ", CreateWav.data_size
+    print "setting CHUNK = ", Decoder.CHUNK
+    print "setting freqBeginEnd = ", CreateWav.freqBeginEnd
+    print "setting freq0 = ", CreateWav.freq0
+    print "setting freq1 = ", CreateWav.freq1
+    print "setting freq1 = ", CreateWav.freq1
 
 class App(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
         self.grid()
         self.menuframe = Frame(self)
-        self.menuframe.grid(column=0, row=0, rowspan=5, sticky=(N, W, E, S))
+        self.menuframe.grid(column=0, row=0, rowspan=4, sticky=(N, W, E, S))
         self.menuframe.columnconfigure(0, weight=0)
         self.menuframe.rowconfigure(0, weight=1)
         self.menuframe.rowconfigure(1, weight=1)
@@ -67,11 +104,12 @@ class App(Frame):
         self.label_freq1.destroy()
         self.label_freq2.destroy()
         self.button_save_options.destroy()
+        self.button_set_default_options.destroy()
 
     def create_options(self):
-        variable = StringVar(self)
-        variable.set(SPEED_OPTIONS[2]) # default value
-        self.speed_options_dropdown = apply(OptionMenu, (self, variable) + tuple(SPEED_OPTIONS))
+        self.speed = StringVar(self)
+        self.speed.set(SPEED_OPTIONS_VIEW[2]) # default value
+        self.speed_options_dropdown = apply(OptionMenu, (self, self.speed) + tuple(SPEED_OPTIONS_VIEW))
         self.speed_options_dropdown.grid(column=2, row=0, padx=5, pady=5, sticky="nsew")
         self.label_speed_options = Label(self, text="Speed")
         self.label_speed_options.grid(column=1, row=0, padx=5, pady=5, sticky="nsew")
@@ -91,11 +129,41 @@ class App(Frame):
         self.freq2.grid(column=2, row=4, columnspan=4, padx=5, pady=5, sticky="nsew")
         self.label_freq2 = Label(self, text="Freq 2")
         self.label_freq2.grid(column=1, row=4, padx=5, pady=5, sticky="nsew")
+        self.button_set_default_options = Button(self, text="Default", command=self.button_set_default_options_click)
+        self.button_set_default_options.grid(column=3, row=5,padx=5, pady=5, sticky="nsew")
         self.button_save_options = Button(self, text="Save", command=self.button_save_options_click)
         self.button_save_options.grid(column=4, row=5,padx=5, pady=5, sticky="nsew")
+        self.freq_begin_end.insert(0, str(CreateWav.freqBeginEnd))
+        self.freq0.insert(0, str(CreateWav.freq0))
+        self.freq1.insert(0, str(CreateWav.freq1))
+        self.freq2.insert(0, str(CreateWav.freqb))
+
+    def button_set_default_options_click(self):
+        CreateWav.data_size = DEFAULT_SETTINGS['data_size']
+        Decoder.CHUNK = DEFAULT_SETTINGS['CHUNK']
+        CreateWav.freqBeginEnd = DEFAULT_SETTINGS['freqBeginEnd']
+        CreateWav.freq0 = DEFAULT_SETTINGS['freq0']
+        CreateWav.freq1 = DEFAULT_SETTINGS['freq1']
+        CreateWav.freqb = DEFAULT_SETTINGS['freqb']
+        Decoder.Target_Begin = DEFAULT_SETTINGS['Target_Begin']
+        Decoder.Target_0 = DEFAULT_SETTINGS['Target_0']
+        Decoder.Target_1 = DEFAULT_SETTINGS['Target_1']
+        Decoder.Target_b = DEFAULT_SETTINGS['Target_b']
+        self.button_options_click()
+        print_vars()
 
     def button_save_options_click(self):
-        pass
+        CreateWav.data_size = SPEED_OPTIONS_CREATE_WAV[self.speed.get()]
+        Decoder.CHUNK = SPEED_OPTIONS_DECODER[self.speed.get()]
+        CreateWav.freqBeginEnd = self.freq_begin_end.get()
+        CreateWav.freq0 = self.freq0.get()
+        CreateWav.freq1 = self.freq1.get()
+        CreateWav.freqb = self.freq2.get()
+        Decoder.Target_Begin = self.freq_begin_end.get()
+        Decoder.Target_0 = self.freq0.get()
+        Decoder.Target_1 = self.freq1.get()
+        Decoder.Target_b = self.freq2.get()
+        print_vars()
 
     def config_modes(self, prev_mode, curr_mode):
         if prev_mode == DECODE_MODE:
