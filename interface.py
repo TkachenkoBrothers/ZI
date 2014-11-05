@@ -186,23 +186,23 @@ class App(Frame):
 
     def create_decode_stop_button(self):
         self.button_stop_decode = Button(self, text="Stop", command=self.button_decode_stop_click)
-        self.button_stop_decode.grid(column=4, row=5,padx=5, pady=5, sticky="nsew")
+        self.button_stop_decode.grid(column=4, row=3,rowspan=2,padx=5, pady=5, sticky="nsew")
     def destroy_decode_stop_button(self):
         self.button_stop_decode.destroy()
 
     def create_decode_start_button(self):
         self.button_start_decode = Button(self, text="Start", command=self.button_decode_start_click)
-        self.button_start_decode.grid(column=1, row=5, padx=5, pady=5, sticky="nsew")
+        self.button_start_decode.grid(column=1, row=3, rowspan=2,padx=5, pady=5, sticky="nsew")
     def destroy_decode_start_button(self):
         self.button_start_decode.destroy()
 
     def create_decoder(self):
-        self.create_decoder_text_box()
+        #self.create_decoder_text_box()
         self.create_decode_stop_button()
         self.create_decode_start_button()
         self.mode = 'decode'
     def destroy_decoder(self):
-        self.destroy_decoder_text_box()
+        #self.destroy_decoder_text_box()
         self.destroy_decode_stop_button()
         self.destroy_decode_start_button()
 
@@ -212,6 +212,8 @@ class App(Frame):
         self.create_code_play_button()
         self.mode = 'code'
     def destroy_coder(self):
+        if self.code_progress_exist:
+            self.code_progress.destroy()
         self.destroy_code_accept_button()
         self.destroy_coder_text_box()
         self.destroy_code_play_button()
@@ -223,13 +225,30 @@ class App(Frame):
         self.label_info.destroy()
 
     def button_decode_start_click(self):
-        decoder = Decoder.Decoder()
+        self.decoder = Decoder.Decoder()
+        self.stop = False
         Decoder.loop_running = True
-        t = Thread(target=decoder.decode)
+        t = Thread(target=self.decoder.decode, args=[self.stop,])
         t.start()
+
+    def waiting_for_decoded_word(self):
+        print 'hello'
+        print self.decoder.finStr
+        label_decoded_word = Label(self, text=self.decoder.finStr)
+        label_decoded_word.grid(column=1, row=0, padx=5, pady=5, sticky="nsew")
+
 
     def button_decode_stop_click(self):
         Decoder.loop_running = False
+        processing = Thread(target=self.decoder.process)
+        processing.start()
+        processing.join()
+        #forming_decoded_word = Thread(target=self.waiting_for_decoded_word)
+        #forming_decoded_word.start()
+        print self.decoder.finStr
+        label_decoded_word = Label(self, text="Result: "+self.decoder.finStr)
+        label_decoded_word.grid(column=1, row=0, padx=5, pady=5, sticky="nsew")
+
 
     def button_coder_click(self):
         if self.code_progress_exist:

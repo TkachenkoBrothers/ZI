@@ -8,8 +8,7 @@ from numpy import array
 import numpy
 import sys, time, os
 import curses
-
-
+from threading import Thread
 
 
 CHUNK = 250 # Chunk of audio input to consider
@@ -103,9 +102,8 @@ class Decoder:
                      # This value will be compared to the current average to detect
                      # the change in note
         # play stream and find the frequency of each chunk
-        i = 0
+        #i = 0
         while loop_running:
-            print('loop running...')
             perfect_cnt = 0
             data = self.stream.read(CHUNK)
             # unpack the data and times by the hamming window
@@ -132,9 +130,9 @@ class Decoder:
             this_avg = sum(last_n) / SAMPLE_SIZE # Compute the average
             #print(thefreq)
             self.freq_list.append(thefreq)
-            i += 1
-            if i == 1800:
-                break
+            #i += 1
+            #if i == 1800:
+            #    break
 
 
     def theMostCommonFreq(self, start, end):
@@ -219,14 +217,20 @@ class Decoder:
         self.stream.close()
         self.audio.terminate()
 
-    def decode(self):
-        self._open_audio()
-        self._loop()
-        #self.analize_freq_list()
+    def process(self):
+        print 'loop_finish'
+        self.analize_freq_list()
         print self.binstr
         self._close_audio()
         self.transformBinStr()
         print self.finStr
+
+    def decode(self, stop):
+        self._open_audio()
+        self._loop()
+
+
+
 
 
 
