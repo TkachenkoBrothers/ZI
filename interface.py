@@ -2,6 +2,7 @@ __author__ = 'Roman'
 from Tkinter import *
 import CreateWav
 import Decoder
+from threading import Thread
 
 class App(Frame):
     def __init__(self, master):
@@ -84,7 +85,8 @@ class App(Frame):
     def button_decode_start_click(self):
         decoder = Decoder.Decoder()
         Decoder.loop_running = True
-        decoder.decode()
+        t = Thread(target=decoder.decode)
+        t.start()
 
     def button_decode_stop_click(self):
         Decoder.loop_running = False

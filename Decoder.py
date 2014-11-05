@@ -79,7 +79,8 @@ class Decoder:
                      # the change in note
         # play stream and find the frequency of each chunk
         i = 0
-        while True:
+        while loop_running:
+            print('loop running...')
             perfect_cnt = 0
             data = self.stream.read(CHUNK)
             # unpack the data and times by the hamming window
@@ -196,7 +197,7 @@ class Decoder:
     def decode(self):
         self._open_audio()
         self._loop()
-        self.analize_freq_list()
+        #self.analize_freq_list()
         print self.binstr
         self._close_audio()
         self.transformBinStr()
