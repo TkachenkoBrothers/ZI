@@ -15,6 +15,7 @@ def write_wav_data_element(freq):
         sine_list_x.append(math.sin(2*math.pi*freq*(x/frate)))
 
 def write_wav_data(progress, close_flag):
+    del sine_list_x[:]
     wav_file = wave.open(fname, "w")
     nchannels = 1
     sampwidth = 2
@@ -48,7 +49,7 @@ def write_wav_data(progress, close_flag):
     close_flag = True
     #progress.destroy()
     wav_file.close()
-
+    del sine_list_x[:]
 
 
 
