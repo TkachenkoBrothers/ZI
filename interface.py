@@ -249,6 +249,7 @@ class App(Frame):
         #forming_decoded_word.start()
         print self.decoder.finStr
         label_decoded_word = Label(self, text="Result: " + self.decoder.finStr)
+        self.decoder.finStr = ''
         label_decoded_word.grid(column=1, row=0, padx=5, pady=5, sticky="nsew")
 
 

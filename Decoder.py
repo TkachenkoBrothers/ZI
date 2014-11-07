@@ -46,6 +46,7 @@ def play():
     stream.close()
     #close PyAudio
     p.terminate()
+    f.close()
 
 class Decoder:
 
@@ -222,7 +223,3 @@ class Decoder:
         self._open_audio()
         self._loop()
 
-
-if __name__ == '__main__':
-    u = Decoder()
-    u.decode()
