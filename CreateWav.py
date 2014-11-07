@@ -1,13 +1,9 @@
 import math
 import wave
 import struct
-import config
+from config import *
 
-freq0 = 5200.0
-freq1 = 5300.0
-freqb = 5400.0
-freqBeginEnd = 5000.0
-data_size = 1000
+
 fname = "WaveTest.wav"
 frate = 11025.0  # framerate as a float
 amp = 64000.0     # multiplier for amplitude

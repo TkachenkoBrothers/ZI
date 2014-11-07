@@ -9,22 +9,10 @@ import numpy
 import sys, time, os
 import curses
 from threading import Thread
-
-
-CHUNK = 250 # Chunk of audio input to consider
-RATE = 44100 # Recording rate
-WINDOW = blackman(CHUNK) # Using blackman window. For more information see
-SAMPLE_SIZE = 8
-                # Number of data points to average over. This is used for 2 things
-                # 1. Reducing noise between subsequent string strokes
-                # 2. We don't output too many values which might confuse the user
-Target_Begin = 5000
-Target_0 = 5200
-Target_1 = 5300
-Target_b = 5400
+from config import*
 
 loop_running = False
-
+WINDOW = blackman(CHUNK) # Using blackman window. For more information see
 try: # Windows?
     import msvcrt
     def kbfunc():
@@ -191,7 +179,7 @@ class Decoder:
         arr = []
         b = ''
         k = []
-
+        self.finStr = ''
         for a in range(0, len(self.binstr), 1):
             if self.binstr[a] == 'b':
                 k.append(a)
@@ -223,17 +211,16 @@ class Decoder:
         print self.binstr
         self._close_audio()
         self.transformBinStr()
+        self.binstr = ''
         print self.finStr
 
-    def decode(self, stop):
+    def decode(self):
+        self.term_width = int(168)
+        self.freq_list = []
+        self.binstr = ''
+        self.finStr = ''
         self._open_audio()
         self._loop()
-
-
-
-
-
-
 
 
 if __name__ == '__main__':

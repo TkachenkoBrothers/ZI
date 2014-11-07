@@ -7,12 +7,12 @@ from threading import Thread
 from config import *
 
 def print_vars():
-    print "setting data_size = ", CreateWav.data_size
-    print "setting CHUNK = ", Decoder.CHUNK
-    print "setting freqBeginEnd = ", CreateWav.freqBeginEnd
-    print "setting freq0 = ", CreateWav.freq0
-    print "setting freq1 = ", CreateWav.freq1
-    print "setting freq1 = ", CreateWav.freq1
+    print "setting data_size = ", data_size
+    print "setting CHUNK = ", CHUNK
+    print "setting freqBeginEnd = ", freqBeginEnd
+    print "setting freq0 = ", freq0
+    print "setting freq1 = ", freq1
+    print "setting freqb = ", freqb
 
 class App(Frame):
     def __init__(self, master):
@@ -48,6 +48,7 @@ class App(Frame):
         self.button_info.grid(column=0, row=3,padx=5, pady=5, sticky="nsew")
         self.create_coder()
         self.code_progress_exist = False
+        self.decoder_exists = False
 
     def button_options_click(self):
         self.config_modes(self.mode, OPTIONS_MODE)
@@ -100,30 +101,30 @@ class App(Frame):
         self.freq2.insert(0, str(CreateWav.freqb))
 
     def button_set_default_options_click(self):
-        CreateWav.data_size = DEFAULT_SETTINGS['data_size']
-        Decoder.CHUNK = DEFAULT_SETTINGS['CHUNK']
-        CreateWav.freqBeginEnd = DEFAULT_SETTINGS['freqBeginEnd']
-        CreateWav.freq0 = DEFAULT_SETTINGS['freq0']
-        CreateWav.freq1 = DEFAULT_SETTINGS['freq1']
-        CreateWav.freqb = DEFAULT_SETTINGS['freqb']
-        Decoder.Target_Begin = DEFAULT_SETTINGS['Target_Begin']
-        Decoder.Target_0 = DEFAULT_SETTINGS['Target_0']
-        Decoder.Target_1 = DEFAULT_SETTINGS['Target_1']
-        Decoder.Target_b = DEFAULT_SETTINGS['Target_b']
+        data_size = DEFAULT_SETTINGS['data_size']
+        CHUNK = DEFAULT_SETTINGS['CHUNK']
+        freqBeginEnd = DEFAULT_SETTINGS['freqBeginEnd']
+        freq0 = DEFAULT_SETTINGS['freq0']
+        freq1 = DEFAULT_SETTINGS['freq1']
+        freqb = DEFAULT_SETTINGS['freqb']
+        Target_Begin = DEFAULT_SETTINGS['Target_Begin']
+        Target_0 = DEFAULT_SETTINGS['Target_0']
+        Target_1 = DEFAULT_SETTINGS['Target_1']
+        Target_b = DEFAULT_SETTINGS['Target_b']
         self.button_options_click()
         print_vars()
 
     def button_save_options_click(self):
-        CreateWav.data_size = SPEED_OPTIONS_CREATE_WAV[self.speed.get()]
-        Decoder.CHUNK = SPEED_OPTIONS_DECODER[self.speed.get()]
-        CreateWav.freqBeginEnd = float(self.freq_begin_end.get())
-        CreateWav.freq0 = float(self.freq0.get())
-        CreateWav.freq1 = float(self.freq1.get())
-        CreateWav.freqb = float(self.freq2.get())
-        Decoder.Target_Begin = float(self.freq_begin_end.get())
-        Decoder.Target_0 = float(self.freq0.get())
-        Decoder.Target_1 = float(self.freq1.get())
-        Decoder.Target_b = float(self.freq2.get())
+        data_size = SPEED_OPTIONS_CREATE_WAV[self.speed.get()]
+        CHUNK = SPEED_OPTIONS_DECODER[self.speed.get()]
+        freqBeginEnd = float(self.freq_begin_end.get())
+        freq0 = float(self.freq0.get())
+        freq1 = float(self.freq1.get())
+        freqb = float(self.freq2.get())
+        Target_Begin = float(self.freq_begin_end.get())
+        Target_0 = float(self.freq0.get())
+        Target_1 = float(self.freq1.get())
+        Target_b = float(self.freq2.get())
         print_vars()
 
     def config_modes(self, prev_mode, curr_mode):
@@ -225,10 +226,11 @@ class App(Frame):
         self.label_info.destroy()
 
     def button_decode_start_click(self):
-        self.decoder = Decoder.Decoder()
-        self.stop = False
+        if self.decoder_exists == False:
+            self.decoder_exists = True
+            self.decoder = Decoder.Decoder()
         Decoder.loop_running = True
-        t = Thread(target=self.decoder.decode, args=[self.stop,])
+        t = Thread(target=self.decoder.decode)
         t.start()
 
     def waiting_for_decoded_word(self):
@@ -246,7 +248,7 @@ class App(Frame):
         #forming_decoded_word = Thread(target=self.waiting_for_decoded_word)
         #forming_decoded_word.start()
         print self.decoder.finStr
-        label_decoded_word = Label(self, text="Result: "+self.decoder.finStr)
+        label_decoded_word = Label(self, text="Result: " + self.decoder.finStr)
         label_decoded_word.grid(column=1, row=0, padx=5, pady=5, sticky="nsew")
 
 
@@ -281,5 +283,3 @@ class App(Frame):
 
     def button_play_code_click(self):
         Decoder.play()
-
-
