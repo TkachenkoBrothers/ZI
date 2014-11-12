@@ -6,13 +6,7 @@ import Decoder
 from threading import Thread
 from config import *
 
-def print_vars():
-    print "setting data_size = ", data_size
-    print "setting CHUNK = ", CHUNK
-    print "setting freqBeginEnd = ", freqBeginEnd
-    print "setting freq0 = ", freq0
-    print "setting freq1 = ", freq1
-    print "setting freqb = ", freqb
+
 
 class App(Frame):
     def __init__(self, master):
@@ -35,6 +29,7 @@ class App(Frame):
         self.rowconfigure(2, weight=1)
         self.rowconfigure(3, weight=1)
         self.rowconfigure(4, weight=1)
+        self.vars = Vars()
         self.create_widgets()
     def create_widgets(self):
         self.mode = 'code'
@@ -49,6 +44,14 @@ class App(Frame):
         self.create_coder()
         self.code_progress_exist = False
         self.decoder_exists = False
+
+    def print_vars(self):
+        print "setting data_size = ", self.vars.data_size
+        print "setting CHUNK = ", self.vars.CHUNK
+        print "setting freqBeginEnd = ", self.vars.freqBeginEnd
+        print "setting freq0 = ", self.vars.freq0
+        print "setting freq1 = ", self.vars.freq1
+        print "setting freqb = ", self.vars.freqb
 
     def button_options_click(self):
         self.config_modes(self.mode, OPTIONS_MODE)
@@ -95,37 +98,37 @@ class App(Frame):
         self.button_set_default_options.grid(column=3, row=5,padx=5, pady=5, sticky="nsew")
         self.button_save_options = Button(self, text="Save", command=self.button_save_options_click)
         self.button_save_options.grid(column=4, row=5,padx=5, pady=5, sticky="nsew")
-        self.freq_begin_end.insert(0, str(CreateWav.freqBeginEnd))
-        self.freq0.insert(0, str(CreateWav.freq0))
-        self.freq1.insert(0, str(CreateWav.freq1))
-        self.freq2.insert(0, str(CreateWav.freqb))
+        self.freq_begin_end.insert(0, str(self.vars.freqBeginEnd))
+        self.freq0.insert(0, str(self.vars.freq0))
+        self.freq1.insert(0, str(self.vars.freq1))
+        self.freq2.insert(0, str(self.vars.freqb))
 
     def button_set_default_options_click(self):
-        data_size = DEFAULT_SETTINGS['data_size']
-        CHUNK = DEFAULT_SETTINGS['CHUNK']
-        freqBeginEnd = DEFAULT_SETTINGS['freqBeginEnd']
-        freq0 = DEFAULT_SETTINGS['freq0']
-        freq1 = DEFAULT_SETTINGS['freq1']
-        freqb = DEFAULT_SETTINGS['freqb']
-        Target_Begin = DEFAULT_SETTINGS['Target_Begin']
-        Target_0 = DEFAULT_SETTINGS['Target_0']
-        Target_1 = DEFAULT_SETTINGS['Target_1']
-        Target_b = DEFAULT_SETTINGS['Target_b']
+        self.vars.data_size = DEFAULT_SETTINGS['data_size']
+        self.vars.CHUNK = DEFAULT_SETTINGS['CHUNK']
+        self.vars.freqBeginEnd = DEFAULT_SETTINGS['freqBeginEnd']
+        self.vars.freq0 = DEFAULT_SETTINGS['freq0']
+        self.vars.freq1 = DEFAULT_SETTINGS['freq1']
+        self.vars.freqb = DEFAULT_SETTINGS['freqb']
+        self.vars.Target_Begin = DEFAULT_SETTINGS['Target_Begin']
+        self.vars.Target_0 = DEFAULT_SETTINGS['Target_0']
+        self.vars.Target_1 = DEFAULT_SETTINGS['Target_1']
+        self.vars.Target_b = DEFAULT_SETTINGS['Target_b']
         self.button_options_click()
-        print_vars()
+        self.print_vars()
 
     def button_save_options_click(self):
-        data_size = SPEED_OPTIONS_CREATE_WAV[self.speed.get()]
-        CHUNK = SPEED_OPTIONS_DECODER[self.speed.get()]
-        freqBeginEnd = float(self.freq_begin_end.get())
-        freq0 = float(self.freq0.get())
-        freq1 = float(self.freq1.get())
-        freqb = float(self.freq2.get())
-        Target_Begin = float(self.freq_begin_end.get())
-        Target_0 = float(self.freq0.get())
-        Target_1 = float(self.freq1.get())
-        Target_b = float(self.freq2.get())
-        print_vars()
+        self.vars.data_size = SPEED_OPTIONS_CREATE_WAV[self.speed.get()]
+        self.vars.CHUNK = SPEED_OPTIONS_DECODER[self.speed.get()]
+        self.vars.freqBeginEnd = float(self.freq_begin_end.get())
+        self.vars.freq0 = float(self.freq0.get())
+        self.vars.freq1 = float(self.freq1.get())
+        self.vars.freqb = float(self.freq2.get())
+        self.vars.Target_Begin = float(self.freq_begin_end.get())
+        self.vars.Target_0 = float(self.freq0.get())
+        self.vars.Target_1 = float(self.freq1.get())
+        self.vars.Target_b = float(self.freq2.get())
+        self.print_vars()
 
     def config_modes(self, prev_mode, curr_mode):
         if prev_mode == DECODE_MODE:
