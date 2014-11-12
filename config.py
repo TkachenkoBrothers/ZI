@@ -1,5 +1,3 @@
-CHUNK = 250 # Chunk of audio input to consider
-RATE = 44100 # Recording rate
 
 class Vars():
     def __init__(self):
@@ -14,6 +12,8 @@ class Vars():
         self.freqb = 5400.0
         self.freqBeginEnd = 5000.0
         self.data_size = 1000
+        self.CHUNK = 250 # Chunk of audio input to consider
+        self.RATE = 44100 # Recording rate
 
 
 SPEED_OPTIONS_VIEW = [

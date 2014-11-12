@@ -231,9 +231,9 @@ class App(Frame):
     def button_decode_start_click(self):
         if self.decoder_exists == False:
             self.decoder_exists = True
-            self.decoder = Decoder.Decoder()
+            self.decoder = Decoder.Decoder(self.vars)
         Decoder.loop_running = True
-        t = Thread(target=self.decoder.decode)
+        t = Thread(target=self.decoder.decode, args=[self.vars, ])
         t.start()
 
     def waiting_for_decoded_word(self):
@@ -245,7 +245,7 @@ class App(Frame):
 
     def button_decode_stop_click(self):
         Decoder.loop_running = False
-        processing = Thread(target=self.decoder.process)
+        processing = Thread(target=self.decoder.process, args=[self.vars, ])
         processing.start()
         processing.join()
         #forming_decoded_word = Thread(target=self.waiting_for_decoded_word)
@@ -282,8 +282,8 @@ class App(Frame):
             self.code_progress.grid(column=1, columnspan=4, row=3, padx=5, pady=5, sticky="ew")
             self.code_progress['maximum'] = 100
             self.code_progress_exist = True;
-            code_thread = Thread(target=CreateWav.write_wav_data, args=[self.code_progress,close_flag,])
+            code_thread = Thread(target=CreateWav.write_wav_data, args=[self.code_progress,close_flag, self.vars,])
             code_thread.start()
 
     def button_play_code_click(self):
-        Decoder.play()
+        Decoder.play(self.vars)
